@@ -1,2 +1,6 @@
+# Jetbrains
 .idea
 *.iml
+
+# AWS
+onf_user_credentials.csv
