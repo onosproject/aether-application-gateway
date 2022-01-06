@@ -1,0 +1,206 @@
+# SPDX-FileCopyrightText: 2021-present Open Networking Foundation <info@opennetworking.org>
+#
+# SPDX-License-Identifier: LicenseRef-ONF-Member-Only-1.0
+info:
+  contact:
+    email: info@opennetworking.org
+    name: Open Networking Foundation
+    url: https://opennetworking.org
+  description: Aether Application Gateway
+  license:
+    name: LicenseRef-ONF-Member-Only-1.0
+    url: https://opennetworking.org/wp-content/uploads/2020/06/ONF-Member-Only-Software-License-v1.0.pdf
+  termsOfService: https://opennetworking.org/wp-content/uploads/2019/02/ONF-Licensing-and-IPR-FAQ-2020-06.pdf
+  title: Aether Application Gateway
+  version: 0.0.1
+openapi: 3.0.0
+paths:
+  /devices:
+    get:
+      tags:
+        - Devices
+      summary: List All Devices
+      operationId: listDevices
+      responses:
+        "200":
+          description: GET OK 200
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    post:
+      tags:
+        - Devices
+      description: Creates a new device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+
+      responses:
+        '201':
+          description: Successfully created a device
+
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /devices/{id}:
+    get:
+      tags:
+        - Devices
+      description: Describe a Device from it's unique ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Successfully returned a device
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    put:
+      tags:
+        - Devices
+      summary: Update a Device
+      description: A complete replacement of a device with id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The deviceId requested by caller.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: Updated the device completely.
+
+    delete:
+      tags:
+        - Devices
+      summary: Deletes a device
+      description: Deletes the device with id.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The deviceId requested by user.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The resource was deleted successfully.
+components:
+  schemas:
+    Device:
+      type: object
+      properties:
+        serial-number:
+          type: string
+          pattern: "^([a-zA-Z0-9\\-\\.-])*$"
+          minLength: 3
+        imei:
+          type: string
+          maxLength: 20
+        display-name:
+          type: string
+          maxLength: 50
+        location:
+          type: string
+          maxLength: 50
+        type:
+          type: string
+        sim:
+          type: string
+      required:
+        - serial-number
+        - imei
+        - display-name
+        - type
+#    Application:
+#      type: object
+#      properties:
+#        application-id:
+#          type: string
+#          pattern: "^([a-zA-Z0-9\\-\\.-])*$"
+#          minLength: 3
+#        display-name:
+#          type: string
+#          maxLength: 50
+#      required:
+#        - application-id
+#        - display-name
+#    Sim:
+#      type: object
+#      properties:
+#        iccid:
+#          type: string
+#          pattern: "^([a-zA-Z0-9\\-\\.-])*$"
+#          minLength: 3
+#        display-name:
+#          type: string
+#          maxLength: 50
+#      required:
+#        - iccid
+#    Slice:
+#      type: object
+#      properties:
+#        slice-id:
+#          type: string
+#          pattern: "^([a-zA-Z0-9\\-\\.-])*$"
+#          minLength: 3
+#        display-name:
+#          type: string
+#          maxLength: 50
+#        device-groups:
+#          type: array
+#          uniqueItems: true
+#          items:
+#            type: string
+#        applications:
+#          type: array
+#          uniqueItems: true
+#          items:
+#            type: string
+#      required:
+#        - slice-id
+#        - display-name
