@@ -41,7 +41,7 @@ deps-upgrade:
 # ==================================================================================== #
 aether-application-gateway: # @HELP build aether-application-gateway Docker image
 	@go mod vendor
-	docker build . -f build/Dockerfile \
+	docker build . -f build/aether-application-gateway/Dockerfile \
 		    -t onosproject/aether-application-gateway:${APP_GTWY_VERSION}
 	@rm -rf vendor
 
