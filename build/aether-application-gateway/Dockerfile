@@ -9,7 +9,7 @@ COPY cmd/ /go/src/github.com/onosproject/aether-application-gateway/internal/
 COPY pkg/ /go/src/github.com/onosproject/aether-application-gateway/pkg/
 COPY vendor/ /go/src/github.com/onosproject/aether-application-gateway/vendor/
 
-RUN cd /go/src/github.com/onosproject/aether-application-gateway && go build -mod=vendor ./...
+RUN cd /go/src/github.com/onosproject/aether-application-gateway && go build -mod=vendor ./cmd/aether-application-gateway
 
 FROM alpine:3.12
 RUN apk add libc6-compat
