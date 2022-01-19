@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/onosproject/aether-application-gateway/internal/config"
 	"github.com/onosproject/aether-application-gateway/internal/router"
 	"log"
 	"net/http"
@@ -13,32 +14,25 @@ import (
 	"time"
 )
 
-type config struct {
-	port int
-	env  string
-}
-
 func main() {
-	var cfg config
+	var cfg config.Config
 
-	flag.IntVar(&cfg.port, "port", 8080, "API server port")
-	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
+	flag.IntVar(&cfg.Port, "port", 8080, "API server port")
+	flag.StringVar(&cfg.Env, "env", "development", "Environment (development|staging|production)")
 	flag.Parse()
 
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	r := gin.Default()
-
-	router.SetAllRoutes(r)
+	r := router.Setup()
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Welcome to the Aether Application Gateway API")
 	})
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.port),
+		Addr:         fmt.Sprintf(":%d", cfg.Port),
 		Handler:      r,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,

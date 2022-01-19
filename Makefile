@@ -28,3 +28,28 @@ deps-upgrade:
 	go get -u -t -d -v ./...
 	go mod tidy
 	go mod vendor
+
+# ==================================================================================== #
+# BUILD
+# ==================================================================================== #
+
+images: # @HELP build all Docker images (the build happens inside a docker container)
+images: aether-application-gateway
+
+docker-build: aether-application-gateway
+
+docker-push: # push to docker registry: use DOCKER_REGISTRY, DOCKER_REPOSITORY and DOCKER_TAG to customize
+ifdef DOCKER_USER
+ifdef DOCKER_PASSWORD
+	echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin
+else
+	@echo "DOCKER_USER is specified but DOCKER_PASSWORD is missing"
+	@exit 1
+endif
+endif
+	docker push ${DOCKER_IMAGENAME}
+
+all: images
+
+publish:
+	./../build-tools/publish-version ${VERSION} onosproject/aether-appliction-gateway

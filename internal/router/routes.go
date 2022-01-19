@@ -2,35 +2,41 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/onosproject/aether-application-gateway/internal/controllers/v1"
+	"github.com/onosproject/aether-application-gateway/internal/controllers"
 )
 
-func SetAllRoutes(r *gin.Engine) {
-	api := r.Group("/api/v1")
+func Setup() *gin.Engine {
+	r := gin.Default()
+	app := &controllers.App{}
+
+	setDeviceRoutes(r, app)
+	setApplicationRoutes(r, app)
+
+	return r
+}
+
+func setDeviceRoutes(r *gin.Engine, app *controllers.App) {
+	devices := r.Group("/devices")
 	{
-		SetDeviceRoutes(api)
-		SetApplicationRoutes(api)
+		{
+			devices.GET("", app.ListDevices)
+			devices.POST("", app.CreateDevice)
+			devices.GET("/:id", app.GetDevice)
+			devices.PUT("/:id", app.UpdateDevice)
+			devices.DELETE("/:id", app.DeleteDevice)
+		}
 	}
 }
 
-func SetDeviceRoutes(api *gin.RouterGroup) {
-	devices := api.Group("/devices")
+func setApplicationRoutes(r *gin.Engine, app *controllers.App) {
+	apps := r.Group("/applications")
 	{
-		devices.GET("", v1.ListDevices)
-		devices.POST("", v1.CreateDevice)
-		devices.GET("/:id", v1.GetDevice)
-		devices.PUT("/:id", v1.UpdateDevice)
-		devices.DELETE("/:id", v1.DeleteDevice)
-	}
-}
-
-func SetApplicationRoutes(api *gin.RouterGroup) {
-	applications := api.Group("/applications")
-	{
-		applications.GET("", v1.ListApplications)
-		applications.POST("", v1.CreateApplication)
-		applications.GET("/:id", v1.GetApplication)
-		applications.PUT("/:id", v1.UpdateApplication)
-		applications.DELETE("/:id", v1.DeleteApplication)
+		{
+			apps.GET("", app.ListApplications)
+			apps.POST("", app.CreateApplication)
+			apps.GET("/:id", app.GetApplication)
+			apps.PUT("/:id", app.UpdateApplication)
+			apps.DELETE("/:id", app.DeleteApplication)
+		}
 	}
 }
