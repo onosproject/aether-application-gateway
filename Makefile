@@ -1,3 +1,10 @@
+export CGO_ENABLED=1
+export GO111MODULE=on
+
+.PHONY: build
+
+APP_GTWY_VERSION := latest
+
 # ==================================================================================== #
 # HELPERS
 # ==================================================================================== #
@@ -35,7 +42,7 @@ deps-upgrade:
 aether-application-gateway: # @HELP build aether-application-gateway Docker image
 	@go mod vendor
 	docker build . -f build/Dockerfile \
-		-t onosproject/aether-application-gateway:${ONOS_MLB_VERSION}
+		    -t onosproject/aether-application-gateway:${APP_GTWY_VERSION}
 	@rm -rf vendor
 
 images: # @HELP build all Docker images (the build happens inside a docker container)
