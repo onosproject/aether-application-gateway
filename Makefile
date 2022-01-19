@@ -32,6 +32,11 @@ deps-upgrade:
 # ==================================================================================== #
 # BUILD
 # ==================================================================================== #
+aether-application-gateway: # @HELP build aether-application-gateway Docker image
+	@go mod vendor
+	docker build . -f build/Dockerfile \
+		-t onosproject/aether-application-gateway:${ONOS_MLB_VERSION}
+	@rm -rf vendor
 
 images: # @HELP build all Docker images (the build happens inside a docker container)
 images: aether-application-gateway
