@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2021-present Open Networking Foundation <info@opennetworking.org>
+//
+// SPDX-License-Identifier: LicenseRef-ONF-Member-1.0
+//
+
 package controllers
 
 import (
@@ -6,6 +11,7 @@ import (
 	"net/http"
 )
 
+// CreateDevice -
 func (a *App) CreateDevice(c *gin.Context) {
 	var newDevice models.Device
 
@@ -17,6 +23,7 @@ func (a *App) CreateDevice(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newDevice)
 }
 
+// ListDevices -
 func (a *App) ListDevices(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, models.Devices)
 }
@@ -42,12 +49,24 @@ func (a *App) GetDevice(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "device not found"})
 }
 
-// UpdateDevice handles connecting and disconnecting
-// a Device from a Slice
+// UpdateDevice -
 func (a *App) UpdateDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// DeleteDevice -
 func (a *App) DeleteDevice(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+// ConnectDevice Connects a device to a slice.
+// Application developer can choose to put it into a specific named DeviceGroup,
+// or can name the slice, in which case the device will be added to an available group within that slice.
+func (a *App) ConnectDevice(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+// DisconnectDevice -
+func (a *App) DisconnectDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }

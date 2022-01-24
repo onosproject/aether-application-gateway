@@ -22,7 +22,7 @@ help:
 ## run/app: run the cmd/app application
 .PHONY: run/app
 run/app:
-	go run cmd/app/main.go
+	go run cmd/aether-application-gateway/main.go
 
 ## tidy: run go mod tidy and vendor
 .PHONY: tidy
@@ -65,3 +65,26 @@ all: images
 
 publish:
 	./../build-tools/publish-version ${VERSION} onosproject/aether-appliction-gateway
+
+license_check: # @HELP examine and ensure license headers exist
+license_check: build-tools
+	./../build-tools/licensing/boilerplate.py -v --rootdir=${CURDIR} --boilerplate LicenseRef-ONF-Member-1.0
+
+golang-ci: # @HELP install golang-ci if not present
+	golangci-lint --version || curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b `go env GOPATH`/bin v1.42.0
+
+linters: golang-ci # @HELP examines Go source code and reports coding problems
+	golangci-lint run --timeout 5m
+
+deps: # @HELP ensure that the required dependencies are in place
+	go build -v ./...
+	bash -c "diff -u <(echo -n) <(git diff go.mod)"
+	bash -c "diff -u <(echo -n) <(git diff go.sum)"
+
+build-tools: # @HELP install the ONOS build tools if needed
+	@if [ ! -d "../build-tools" ]; then cd .. && git clone https://github.com/onosproject/build-tools.git; fi
+
+jenkins-test:  # @HELP run the unit tests and source code validation producing a junit style report for Jenkins
+jenkins-test: build-tools deps license_check linters # openapi-linters
+	CGO_ENABLED=1 TEST_PACKAGES=github.com/onosproject/aether-application-gateway/... ./../build-tools/build/jenkins/make-unit
+
