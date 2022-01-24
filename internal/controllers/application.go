@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2021-present Open Networking Foundation <info@opennetworking.org>
+//
+// SPDX-License-Identifier: LicenseRef-ONF-Member-1.0
+//
+
 package controllers
 
 import (
@@ -6,6 +11,7 @@ import (
 	"net/http"
 )
 
+// CreateApplication -
 func (a *App) CreateApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 	var newApplication models.Application
@@ -18,6 +24,7 @@ func (a *App) CreateApplication(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newApplication)
 }
 
+// GetApplication -
 func (a *App) GetApplication(c *gin.Context) {
 	id := c.Param("id")
 
@@ -30,14 +37,17 @@ func (a *App) GetApplication(c *gin.Context) {
 	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "application not found"})
 }
 
+// ListApplications -
 func (a *App) ListApplications(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, models.Applications)
 }
 
+// UpdateApplication -
 func (a *App) UpdateApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// DeleteApplication -
 func (a *App) DeleteApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
