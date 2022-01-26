@@ -66,6 +66,9 @@ all: images
 publish:
 	./../build-tools/publish-version ${VERSION} onosproject/aether-appliction-gateway
 
+jenkins-publish: build-tools docker-build docker-push # @HELP Jenkins calls this to publish artifacts
+	../build-tools/release-merge-commit
+
 license_check: # @HELP examine and ensure license headers exist
 license_check: build-tools
 	./../build-tools/licensing/boilerplate.py -v --rootdir=${CURDIR} --boilerplate LicenseRef-ONF-Member-1.0
@@ -81,10 +84,12 @@ deps: # @HELP ensure that the required dependencies are in place
 	bash -c "diff -u <(echo -n) <(git diff go.mod)"
 	bash -c "diff -u <(echo -n) <(git diff go.sum)"
 
+jenkins-tools: # @HELP installs tooling needed for Jenkins
+	cd .. && go get -u github.com/jstemmer/go-junit-report && go get github.com/t-yuki/gocover-cobertura
+
 build-tools: # @HELP install the ONOS build tools if needed
 	@if [ ! -d "../build-tools" ]; then cd .. && git clone https://github.com/onosproject/build-tools.git; fi
 
 jenkins-test:  # @HELP run the unit tests and source code validation producing a junit style report for Jenkins
 jenkins-test: build-tools deps license_check linters # openapi-linters
 	CGO_ENABLED=1 TEST_PACKAGES=github.com/onosproject/aether-application-gateway/... ./../build-tools/build/jenkins/make-unit
-
