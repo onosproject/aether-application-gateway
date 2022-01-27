@@ -6,7 +6,6 @@ ARG ONOS_MAKE_TARGET=build
 COPY Makefile go.mod go.sum /go/src/github.com/onosproject/aether-application-gateway/
 COPY cmd/ /go/src/github.com/onosproject/aether-application-gateway/cmd/
 COPY internal/ /go/src/github.com/onosproject/aether-application-gateway/internal/
-COPY pkg/ /go/src/github.com/onosproject/aether-application-gateway/pkg/
 COPY vendor/ /go/src/github.com/onosproject/aether-application-gateway/vendor/
 
 RUN cd /go/src/github.com/onosproject/aether-application-gateway && GOFLAGS=-mod=vendor make ${ONOS_MAKE_TARGET}
