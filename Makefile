@@ -1,9 +1,21 @@
 export CGO_ENABLED=1
 export GO111MODULE=on
 
-.PHONY: build
-
 APP_GTWY_VERSION := latest
+
+# Variables
+VERSION                  ?= $(shell cat ./VERSION)
+
+## Docker related
+DOCKER_USER              ?=
+DOCKER_PASSWORD          ?=
+DOCKER_REGISTRY          ?=
+DOCKER_REPOSITORY        ?= onosproject/
+DOCKER_BUILD_ARGS        ?=
+DOCKER_TAG               ?= latest
+DOCKER_IMAGENAME         := ${DOCKER_REGISTRY}${DOCKER_REPOSITORY}aether-application-gateway:${DOCKER_TAG}
+
+.PHONY: build
 
 # ==================================================================================== #
 # HELPERS
@@ -39,16 +51,16 @@ deps-upgrade:
 # ==================================================================================== #
 # BUILD
 # ==================================================================================== #
-aether-application-gateway: # @HELP build aether-application-gateway Docker image
+aether-application-gateway-docker: # @HELP build aether-application-gateway Docker image
 	@go mod vendor
 	docker build . -f build/aether-application-gateway/Dockerfile \
 		    -t onosproject/aether-application-gateway:${APP_GTWY_VERSION}
 	@rm -rf vendor
 
 images: # @HELP build all Docker images (the build happens inside a docker container)
-images: aether-application-gateway
+images: aether-application-gateway-docker
 
-docker-build: aether-application-gateway
+docker-build: aether-application-gateway-docker
 
 docker-push: # push to docker registry: use DOCKER_REGISTRY, DOCKER_REPOSITORY and DOCKER_TAG to customize
 ifdef DOCKER_USER
