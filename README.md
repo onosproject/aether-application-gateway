@@ -6,8 +6,8 @@ of Aether 4G/5G connectivity services, while abstracting some low-level intricac
 
 ### Capabilities
 
-* Application Enablement
 * Device Management
+* Application Enablement
 * Telemetry & Analytics
 * Slice Management
 
