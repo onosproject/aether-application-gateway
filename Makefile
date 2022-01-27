@@ -51,6 +51,23 @@ deps-upgrade:
 # ==================================================================================== #
 # BUILD
 # ==================================================================================== #
+build: # @HELP build the Go binaries and run all validations (default)
+build:
+	CGO_ENABLED=1 go build -o build/_output/aether-application-gateway ./cmd/aether-application-gateway
+
+test: # @HELP run the unit tests and source code validation
+test: build deps linters license_check #openapi-linters
+	CGO_ENABLED=1 go test -race github.com/onosproject/aether-application-gateway/cmd/...
+
+jenkins-test:  # @HELP run the unit tests and source code validation producing a junit style report for Jenkins
+jenkins-test: build-tools deps license_check linters # openapi-linters
+	CGO_ENABLED=1 TEST_PACKAGES=github.com/onosproject/aether-application-gateway/... ./../build-tools/build/jenkins/make-unit
+
+deps: # @HELP ensure that the required dependencies are in place
+	go build -v ./...
+	bash -c "diff -u <(echo -n) <(git diff go.mod)"
+	bash -c "diff -u <(echo -n) <(git diff go.sum)"
+
 aether-application-gateway-docker: # @HELP build aether-application-gateway Docker image
 	@go mod vendor
 	docker build . -f build/aether-application-gateway/Dockerfile \
@@ -73,17 +90,16 @@ endif
 endif
 	docker push ${DOCKER_IMAGENAME}
 
-all: images
-
-publish:
-	./../build-tools/publish-version ${VERSION} onosproject/aether-appliction-gateway
-
-jenkins-publish: build-tools docker-build docker-push # @HELP Jenkins calls this to publish artifacts
-	../build-tools/release-merge-commit
+openapi-spec-validator: # @HELP install openapi-spec-validator
+	openapi-spec-validator -h || python -m pip install openapi-spec-validator==0.3.1
 
 license_check: # @HELP examine and ensure license headers exist
 license_check: build-tools
 	./../build-tools/licensing/boilerplate.py -v --rootdir=${CURDIR} --boilerplate LicenseRef-ONF-Member-1.0
+
+openapi-linters: # @HELP lints the Open API specifications
+openapi-linters: openapi-spec-validator
+	openapi-spec-validator api/app-gtwy-openapi3.yaml
 
 golang-ci: # @HELP install golang-ci if not present
 	golangci-lint --version || curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b `go env GOPATH`/bin v1.42.0
@@ -91,17 +107,16 @@ golang-ci: # @HELP install golang-ci if not present
 linters: golang-ci # @HELP examines Go source code and reports coding problems
 	golangci-lint run --timeout 5m
 
-deps: # @HELP ensure that the required dependencies are in place
-	go build -v ./...
-	bash -c "diff -u <(echo -n) <(git diff go.mod)"
-	bash -c "diff -u <(echo -n) <(git diff go.sum)"
-
 jenkins-tools: # @HELP installs tooling needed for Jenkins
 	cd .. && go get -u github.com/jstemmer/go-junit-report && go get github.com/t-yuki/gocover-cobertura
 
 build-tools: # @HELP install the ONOS build tools if needed
 	@if [ ! -d "../build-tools" ]; then cd .. && git clone https://github.com/onosproject/build-tools.git; fi
 
-jenkins-test:  # @HELP run the unit tests and source code validation producing a junit style report for Jenkins
-jenkins-test: build-tools deps license_check linters # openapi-linters
-	CGO_ENABLED=1 TEST_PACKAGES=github.com/onosproject/aether-application-gateway/... ./../build-tools/build/jenkins/make-unit
+all: images
+
+publish:
+	./../build-tools/publish-version ${VERSION} onosproject/aether-appliction-gateway
+
+jenkins-publish: build-tools docker-build docker-push # @HELP Jenkins calls this to publish artifacts
+	../build-tools/release-merge-commit
