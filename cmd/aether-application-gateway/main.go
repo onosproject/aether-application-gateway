@@ -20,24 +20,24 @@ import (
 )
 
 func main() {
-	var cfg config.Config
+	cfg := config.New()
 
-	flag.IntVar(&cfg.Port, "port", 8080, "API server port")
-	flag.StringVar(&cfg.Env, "env", "development", "Environment (development|staging|production)")
+	flag.IntVar(&cfg.Server.Port, "port", 8080, "API server port")
+	flag.StringVar(&cfg.Server.Env, "env", "development", "Environment (development|staging|production)")
 	flag.Parse()
 
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	r := router.Setup()
+	r := router.Setup(&cfg.Roc)
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Welcome to the Aether Application Gateway API")
 	})
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%d", cfg.Port),
+		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),
 		Handler:      r,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
