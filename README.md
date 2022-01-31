@@ -21,4 +21,4 @@ of Aether 4G/5G connectivity services, while abstracting some low-level intricac
     ├── internal                # private application and library code
     ├── pkg                     # library code that may be used by external applications
     │
-    └── makefile                 # commands for developing this project
+    └── Makefile                 # commands for developing this project
