@@ -22,10 +22,10 @@ type Site struct {
 		DisplayName string        `json:"display-name"`
 		IPDomain    string        `json:"ip-domain"`
 		Mbr         struct {
-			Downlink     int    `json:"downlink"`
-			TrafficClass string `json:"traffic-class"`
-			Uplink       int    `json:"uplink"`
+			Downlink int `json:"downlink"`
+			Uplink   int `json:"uplink"`
 		} `json:"mbr"`
+		TrafficClass string `json:"traffic-class"`
 	} `json:"device-group"`
 	DisplayName    string `json:"display-name"`
 	ImsiDefinition struct {
@@ -55,6 +55,7 @@ type Site struct {
 		EdgeMonitoringPrometheusURL string `json:"edge-monitoring-prometheus-url"`
 	} `json:"monitoring"`
 	PriorityTrafficRule []struct {
+		Application string `json:"application"`
 		Description string `json:"description"`
 		Device      string `json:"device"`
 		DisplayName string `json:"display-name"`
@@ -77,7 +78,28 @@ type Site struct {
 		Imsi        int    `json:"imsi"`
 		SimID       string `json:"sim-id"`
 	} `json:"sim-card"`
-	SiteID    string `json:"site-id"`
+	SiteID string `json:"site-id"`
+	Slice  []struct {
+		DefaultBehavior string `json:"default-behavior"`
+		Description     string `json:"description"`
+		DeviceGroup     []struct {
+			DeviceGroup string `json:"device-group"`
+			Enable      bool   `json:"enable"`
+		} `json:"device-group"`
+		DisplayName string `json:"display-name"`
+		Filter      []struct {
+			Allow       bool   `json:"allow"`
+			Application string `json:"application"`
+		} `json:"filter"`
+		Mbr struct {
+			Downlink          int `json:"downlink"`
+			DownlinkBurstSize int `json:"downlink-burst-size"`
+		} `json:"mbr"`
+		Sd      int    `json:"sd"`
+		SliceID string `json:"slice-id"`
+		Sst     int    `json:"sst"`
+		Upf     string `json:"upf"`
+	} `json:"slice"`
 	SmallCell []struct {
 		Address     string `json:"address"`
 		DisplayName string `json:"display-name"`
@@ -92,27 +114,4 @@ type Site struct {
 		Port        int    `json:"port"`
 		UpfID       string `json:"upf-id"`
 	} `json:"upf"`
-	Vcs []struct {
-		DefaultBehavior string `json:"default-behavior"`
-		Description     string `json:"description"`
-		DeviceGroup     []struct {
-			DeviceGroup string `json:"device-group"`
-			Enable      bool   `json:"enable"`
-		} `json:"device-group"`
-		DisplayName string `json:"display-name"`
-		Filter      []struct {
-			Allow       bool   `json:"allow"`
-			Application string `json:"application"`
-		} `json:"filter"`
-		Sd    int `json:"sd"`
-		Slice struct {
-			Mbr struct {
-				Downlink          int `json:"downlink"`
-				DownlinkBurstSize int `json:"downlink-burst-size"`
-			} `json:"mbr"`
-		} `json:"slice"`
-		Sst   int    `json:"sst"`
-		Upf   string `json:"upf"`
-		VcsID string `json:"vcs-id"`
-	} `json:"vcs"`
 }
