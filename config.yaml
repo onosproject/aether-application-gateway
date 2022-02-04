@@ -9,3 +9,6 @@ roc:
   base: "http://localhost:8181"
   target: "connectivity-service-v2"
   token: ""
+
+prometheus:
+  acc: "http://localhost:9090"

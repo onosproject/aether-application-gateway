@@ -12,8 +12,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/onosproject/aether-application-gateway/internal/config"
 	"github.com/onosproject/aether-application-gateway/internal/router"
+	promApi "github.com/prometheus/client_golang/api"
+	promApiV1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"log"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -30,7 +33,22 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	r := router.Setup(&cfg.Roc)
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	httpClient := &http.Client{
+		Timeout:   time.Second * 20,
+		Transport: t,
+	}
+
+	pc, err := promApi.NewClient(promApi.Config{
+		Address: cfg.Prometheus.Acc,
+	})
+	if err != nil {
+		fmt.Printf("Error creating prometheus client: %v\n", err)
+		os.Exit(1)
+	}
+	promV1 := promApiV1.NewAPI(pc)
+
+	r := router.Setup(httpClient, &cfg.Roc, promV1)
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Welcome to the Aether Application Gateway API")

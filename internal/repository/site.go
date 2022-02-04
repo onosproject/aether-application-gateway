@@ -71,13 +71,6 @@ type Site struct {
 		PtrID        string `json:"ptr-id"`
 		TrafficClass string `json:"traffic-class"`
 	} `json:"priority-traffic-rule"`
-	SimCard []struct {
-		Description string `json:"description"`
-		DisplayName string `json:"display-name"`
-		Iccid       int    `json:"iccid"`
-		Imsi        int    `json:"imsi"`
-		SimID       string `json:"sim-id"`
-	} `json:"sim-card"`
 	SiteID string `json:"site-id"`
 	Slice  []struct {
 		DefaultBehavior string `json:"default-behavior"`
@@ -100,6 +93,7 @@ type Site struct {
 		Sst     int    `json:"sst"`
 		Upf     string `json:"upf"`
 	} `json:"slice"`
+	SimCard   []SimCard `json:"sim-card"`
 	SmallCell []struct {
 		Address     string `json:"address"`
 		DisplayName string `json:"display-name"`
@@ -114,4 +108,13 @@ type Site struct {
 		Port        int    `json:"port"`
 		UpfID       string `json:"upf-id"`
 	} `json:"upf"`
+}
+
+// SimCard -
+type SimCard struct {
+	Description string `json:"description"`
+	DisplayName string `json:"display-name"`
+	Iccid       int    `json:"iccid"`
+	Imsi        int    `json:"imsi"`
+	SimID       string `json:"sim-id"`
 }

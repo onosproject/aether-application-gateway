@@ -13,8 +13,9 @@ import (
 
 // Config stores application configuration
 type Config struct {
-	Server ServerConfig
-	Roc    RocConfig
+	Server     ServerConfig
+	Roc        RocConfig
+	Prometheus PrometheusConfig
 }
 
 // ServerConfig -
@@ -28,6 +29,11 @@ type RocConfig struct {
 	Base   string `mapstructure:"BASE"`
 	Target string `mapstructure:"TARGET"`
 	Token  string `mapstructure:"TOKEN"`
+}
+
+// PrometheusConfig -
+type PrometheusConfig struct {
+	Acc string `mapstructure:"ACC"`
 }
 
 // New initializes a new Configuration from the ENV variables

@@ -61,7 +61,6 @@ func (dc *DeviceController) CreateDevice(c *gin.Context) {
 		return
 	}
 
-	//models.DevicesStub = append(models.DevicesStub, newDevice)
 	c.JSON(http.StatusCreated, newDevice)
 }
 

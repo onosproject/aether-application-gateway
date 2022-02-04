@@ -10,7 +10,9 @@ import (
 	"fmt"
 	"github.com/onosproject/aether-application-gateway/internal/models"
 	"github.com/onosproject/aether-application-gateway/internal/repository"
+	"github.com/prometheus/common/model"
 	"log"
+	"strconv"
 )
 
 // DeviceService -
@@ -36,21 +38,37 @@ func (c *DeviceService) GetAllDevices(enterpriseID, siteID string) ([]models.Dev
 		log.Println("error getting site info")
 	}
 
-	simMap := mapSimToIccid(site)
-
+	simMap := mapSim(site)
 	deviceGroupMap := mapDeviceToDeviceGroups(site)
+
+	si, _ := c.analyticsRepo.QueryMetrics("subscriber_info")
+	v := si.(model.Vector)
+	mapData := make(map[string]*model.Sample)
+	for _, val := range v {
+		mapData[string(val.Metric["imsi"])] = val
+	}
 
 	deviceMap := make(map[string]models.Device)
 	for _, d := range site.Device {
+		s := simMap[d.SimCard]
 		newDev := models.Device{
 			ID:           d.DevID,
 			Name:         d.DisplayName,
 			Description:  d.Description,
 			IMEI:         d.Imei,
-			SimICCID:     simMap[d.SimCard],
+			SimICCID:     s.Iccid,
 			DeviceGroups: deviceGroupMap[d.DevID],
 		}
 		deviceMap[d.DevID] = newDev
+
+		imsi := strconv.Itoa(s.Imsi)
+		if _, ok := mapData[imsi]; ok {
+			ip := mapData[imsi].Metric["ip"]
+			newDev.IP = string(ip)
+			attached := mapData[imsi].Value
+			newDev.Attached, _ = strconv.Atoi(attached.String())
+		}
+
 		listDeviceResponse = append(listDeviceResponse, newDev)
 	}
 
@@ -72,21 +90,36 @@ func (c *DeviceService) GetDevice(enterpriseID, siteID, id string) (models.Devic
 		log.Println("error getting site info")
 	}
 
-	simMap := mapSimToIccid(site)
-
+	simMap := mapSim(site)
 	deviceGroupMap := mapDeviceToDeviceGroups(site)
+
+	si, _ := c.analyticsRepo.QueryMetrics("subscriber_info")
+	v := si.(model.Vector)
+	mapData := make(map[string]*model.Sample)
+	for _, val := range v {
+		mapData[string(val.Metric["imsi"])] = val
+	}
 
 	var device models.Device
 	for _, d := range site.Device {
 		if d.DevID == id {
+			s := simMap[d.SimCard]
 
 			device = models.Device{
 				ID:           id,
 				Name:         d.DisplayName,
 				Description:  d.Description,
 				IMEI:         d.Imei,
-				SimICCID:     simMap[d.SimCard],
+				SimICCID:     s.Iccid,
 				DeviceGroups: deviceGroupMap[id],
+			}
+
+			imsi := strconv.Itoa(s.Imsi)
+			if _, ok := mapData[imsi]; ok {
+				ip := mapData[imsi].Metric["ip"]
+				device.IP = string(ip)
+				attached := mapData[imsi].Value
+				device.Attached, _ = strconv.Atoi(attached.String())
 			}
 
 			return device, nil
@@ -96,10 +129,16 @@ func (c *DeviceService) GetDevice(enterpriseID, siteID, id string) (models.Devic
 	return models.Device{}, errors.New("device not found")
 }
 
-func mapSimToIccid(site repository.Site) map[string]int {
-	simMap := make(map[string]int)
+func mapSim(site repository.Site) map[string]*repository.SimCard {
+	simMap := make(map[string]*repository.SimCard)
 	for _, s := range site.SimCard {
-		simMap[s.SimID] = s.Iccid
+		simMap[s.SimID] = &repository.SimCard{
+			SimID:       s.SimID,
+			Description: s.Description,
+			DisplayName: s.DisplayName,
+			Iccid:       s.Iccid,
+			Imsi:        s.Imsi,
+		}
 	}
 	return simMap
 }
