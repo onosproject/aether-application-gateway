@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2019-present Open Networking Foundation <info@opennetworking.org>
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # aether-application-gateway
 
 The Aether Application Gateway (AG) provides a unified API for both control and metrics of the Aether platform. 
