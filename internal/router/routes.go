@@ -11,23 +11,16 @@ import (
 	"github.com/onosproject/aether-application-gateway/internal/controllers"
 	"github.com/onosproject/aether-application-gateway/internal/repository"
 	"github.com/onosproject/aether-application-gateway/internal/services"
+	promApiV1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"net/http"
-	"time"
 )
 
 // Setup initializes Gin engine
-func Setup(roc *config.RocConfig) *gin.Engine {
-	t := http.DefaultTransport.(*http.Transport).Clone()
-
-	httpClient := &http.Client{
-		Timeout:   time.Second * 20,
-		Transport: t,
-	}
-
+func Setup(hc *http.Client, roc *config.RocConfig, promV1 promApiV1.API) *gin.Engine {
 	r := gin.Default()
 
-	sr := repository.NewSiteRepository(httpClient, roc)
-	ar := repository.NewAnalyticsRepository()
+	sr := repository.NewSiteRepository(hc, roc)
+	ar := repository.NewAnalyticsRepository(promV1)
 	ds := services.NewDeviceService(sr, ar)
 	dc := controllers.NewDeviceController(ds)
 

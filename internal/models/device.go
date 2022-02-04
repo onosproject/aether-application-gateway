@@ -11,14 +11,14 @@ type Device struct {
 	Name               string `json:"name"`
 	Description        string `json:"description"`
 	IMEI               int    `json:"imei"`
-	Attached           bool   `json:"attached"`              // sd-core (1,0) (Subscribers_info metric)
-	IP                 string `json:"ip"`                    // sd-core (Subscribers_info metric)
-	SmallCellID        string `json:"small_cell_id"`         // sd-core which metric is this?
-	CurrentMbpsUp      string `json:"current_mbps_up"`       // Prometheus
-	CurrentMbpsDown    string `json:"current_mbps_down"`     // Prometheus
-	Health             string `json:"health"`                // ("healthy" | "unhealthy" | "warning") sd-fabric
-	NumFlows           string `json:"num_flows"`             //  sd-fabric
-	NumFlowsWithIssues string `json:"num_flows_with_issues"` //  sd-fabric
+	Attached           int    `json:"attached"`                        // sd-core (1,0) (Subscribers_info metric)
+	IP                 string `json:"ip,omitempty"`                    // sd-core (Subscribers_info metric)
+	SmallCellID        string `json:"small_cell_id,omitempty"`         // sd-core which metric is this?
+	CurrentMbpsUp      string `json:"current_mbps_up,omitempty"`       // Prometheus
+	CurrentMbpsDown    string `json:"current_mbps_down,omitempty"`     // Prometheus
+	Health             string `json:"health,omitempty"`                // sd-fabric ("healthy" | "unhealthy" | "warning")
+	NumFlows           string `json:"num_flows,omitempty"`             //  sd-fabric
+	NumFlowsWithIssues string `json:"num_flows_with_issues,omitempty"` //  sd-fabric
 	DeviceGroups       string `json:"device_groups"`
 	SimICCID           int    `json:"sim_iccid"`
 }
