@@ -99,5 +99,5 @@ all: images
 publish:
 	./build/build-tools/publish-version ${VERSION} onosproject/aether-appliction-gateway
 
-jenkins-publish: build-tools docker-build docker-push # @HELP Jenkins calls this to publish artifacts
+jenkins-publish: docker-build docker-push # @HELP Jenkins calls this to publish artifacts
 	./build/build-tools/release-merge-commit
