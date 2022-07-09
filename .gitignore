@@ -12,3 +12,5 @@ onf_user_credentials.csv
 # Go
 build/_output/*
 build/build-tools
+
+vendor
